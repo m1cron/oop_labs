@@ -81,3 +81,23 @@ cl_base* cl_base::get_obj(string path){
     }
     return base_next;
 }
+
+void cl_base::set_connect(  const string& signal, cl_base* p_ob_handler,
+                            void (cl_base::* p_handler) (string)){
+    o_sh* p_value = new o_sh;
+    p_value->p_cl_base = p_ob_handler;
+    p_value->p_handler = p_handler;
+    connects.insert({ signal, p_value });
+}
+
+void cl_base::emit_signal(const string& s_ignal, string s_command = ""){
+    cl_base* p_ob;
+    if (connects.empty()) return;
+    if (connects.count(s_ignal) == 0) return;
+    it_connects = connects.begin();
+    for (it_connects; it_connects != connects.end(); ++it_connects)
+        if (it_connects->first == s_ignal) {
+            p_ob = it_connects->second->p_cl_base;
+            (p_ob->*it_connects->second->p_handler)(s_command);
+        }
+}

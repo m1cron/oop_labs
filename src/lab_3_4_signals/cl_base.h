@@ -36,6 +36,8 @@ public:
     string get_path(string, int);
     cl_base* get_root();
     cl_base* get_obj(string);
+    void set_connect(const string&, cl_base*, void (cl_base::*) (string));
+    void emit_signal(const string&, string);
 };
 
 #endif //INC_3_1_TRY_1_CL_BASE_H
