@@ -82,22 +82,29 @@ cl_base* cl_base::get_obj(string path){
     return base_next;
 }
 
-void cl_base::set_connect(  const string& signal, cl_base* p_ob_handler,
-                            void (cl_base::* p_handler) (string)){
-    o_sh* p_value = new o_sh;
-    p_value->p_cl_base = p_ob_handler;
-    p_value->p_handler = p_handler;
-    connects.insert({ signal, p_value });
+void cl_base::set_connect(s_signal sig, s_slot slt, cl_base* ptr){
+    for(connect c : connects){
+        if(c.sig == sig && c.slt == slt && c.base == ptr) return;
+    }
+    connect c = {ptr, sig, slt};
+    connects.push_back(c);
 }
 
-void cl_base::emit_signal(const string& s_ignal, string s_command = ""){
-    cl_base* p_ob;
-    if (connects.empty()) return;
-    if (connects.count(s_ignal) == 0) return;
-    it_connects = connects.begin();
-    for (it_connects; it_connects != connects.end(); ++it_connects)
-        if (it_connects->first == s_ignal) {
-            p_ob = it_connects->second->p_cl_base;
-            (p_ob->*it_connects->second->p_handler)(s_command);
+void cl_base::del_connect(s_signal sig, s_slot slt, cl_base* ptr){
+    for(auto it = connects.begin(); it != connects.end(); it++){
+        if(it->sig == sig && it->slt == slt && it->base == ptr) {
+            connects.erase(it);
+            return;
         }
+    }
+}
+
+void cl_base::emit_signal(s_signal sig, string& mes){
+    for(connect c : connects){
+        if(connects.empty()) return;
+        if(c.sig == sig){
+            c.slt(c.base, this->name);
+            sig(mes);
+        }
+    }
 }

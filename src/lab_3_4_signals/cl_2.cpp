@@ -4,6 +4,12 @@
 
 #include "cl_2.h"
 #include <string>
+#include <iostream>
 using namespace std;
 
-cl_2::cl_2(cl_base* head, string name) : cl_base(head, name) {}
+void cl_2::signal(string& mes){
+    cout << " -> "<< mes;
+}
+void cl_2::slot(cl_base* ptr, string& mes){
+    cout << "\nSignal to " << ptr->getName() << " Text: " << mes;
+}

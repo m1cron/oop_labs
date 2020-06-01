@@ -13,8 +13,8 @@ public:
     using cl_base::cl_base;
     void printPath();
     void start();
-    void signal();
     int exe_app();
+    void signalStart();
 };
 
 

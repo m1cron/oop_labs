@@ -7,8 +7,14 @@
 
 #include <vector>
 #include <string>
-#include <map>
 using namespace std;
+
+class cl_base;
+typedef void (*s_signal)(string&);
+typedef void (*s_slot)(cl_base*, string& s);
+#define SIGNAL(ssignal) ((s_signal) (&ssignal)) // наш любимый тупедеф <3
+#define SLOT(slt) ((s_slot) (&slt))
+
 
 class cl_base {
 private:
@@ -17,12 +23,12 @@ private:
     vector<cl_base*> childs;
     int state;
 
-    struct o_sh {
-        cl_base* p_cl_base;
-        void (cl_base::* p_handler) (string);
+    struct connect{
+        cl_base* base;
+        s_signal sig;
+        s_slot slt;
     };
-    multimap <string, o_sh*> connects;   //контейнер сигналов и обработчиков
-    multimap <string, o_sh*>::iterator it_connects;
+    vector<connect> connects;
 
 public:
     cl_base(cl_base* head = nullptr);
@@ -36,8 +42,9 @@ public:
     string get_path(string, int);
     cl_base* get_root();
     cl_base* get_obj(string);
-    void set_connect(const string&, cl_base*, void (cl_base::*) (string));
-    void emit_signal(const string&, string);
+    void set_connect(s_signal, s_slot, cl_base*);
+    void del_connect(s_signal, s_slot, cl_base*);
+    void emit_signal(s_signal, string&);
 };
 
 #endif //INC_3_1_TRY_1_CL_BASE_H

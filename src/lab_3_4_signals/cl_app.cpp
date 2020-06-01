@@ -8,7 +8,7 @@
 #include "cl_3.h"
 using namespace std;
 
-void cl_app::start() {
+void cl_app::start(){
     string obj0, obj1;
     int cls, state;
     cin >> obj0;
@@ -17,42 +17,47 @@ void cl_app::start() {
 
     while ((cin >> obj0) && (obj0 != "endtree")) {
         cin >> obj1 >> cls >> state;
-
         cl_base *base = this->find(obj0);
-
-        if (cls == 2) {
-            cl_2 *cls_2 = new cl_2(base, obj1);
+        if(cls == 2) {
+            cl_2* cls_2 = new cl_2(base, obj1);
             cls_2->setState(state);
-        } else if (cls == 3) {
-            cl_3 *cls_3 = new cl_3(base, obj1);
+        }
+        if(cls == 3) {
+            cl_3* cls_3 = new cl_3(base, obj1);
             cls_3->setState(state);
         }
+    }
+    cout << "Object tree\n";
+    print_tree("");
+    cout << "\nSet connects";
+    string number, first, second, message;
+    cl_base* from = nullptr;
+    cl_base* to = nullptr;
+    while ((cin >> number) && (number != "0")){
+        cin >> first >> second;
+        cout << "\n" << number << " " << first << " " << second;
+        from = get_root()->find(first);
+        to = get_root()->find(second);
+        from->set_connect(SIGNAL(cl_2::signal), SLOT(cl_2::slot), to);
+    }
+}
+
+void cl_app::signalStart() {
+    cout << "\nEmit signals";
+    string sender, message;
+    cl_base* from = nullptr;
+    while ((cin >> sender) && (sender != "endsignals")) {
+        cin >> message;
+        from = get_root()->find(sender);
+        from->emit_signal(SIGNAL(cl_2::signal), message);
     }
 }
 
 int cl_app::exe_app() {
-    print_tree("");
-    signal();
+    signalStart();
     //print_state();
     //printPath();
     return 1;
-}
-
-void cl_app::signal(){
-    cout << "\nSet connects";
-    int number;
-    string sender, receiver, message;
-
-    while ((cin >> number) && (number != 0)){
-        cin >> sender >> receiver;
-        //this->find(sender)->законектить(number, this->find(receiver));
-    }
-    cout << "\nEmit signals";
-
-    while((cin >> sender) && (sender != "endsignals")){
-        cin >> message;
-        //this->find(sender)->отправить(message);
-    }
 }
 
 void cl_app::printPath() {
@@ -64,7 +69,6 @@ void cl_app::printPath() {
             base = this;
         else
             base = this->get_obj(obj0);
-
         if(base == nullptr)
             cout << "Object not found";
         else
