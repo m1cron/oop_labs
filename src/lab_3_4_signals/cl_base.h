@@ -7,7 +7,7 @@
 
 #include <vector>
 #include <string>
-#include <list>
+#include <map>
 using namespace std;
 
 class cl_base {
@@ -16,6 +16,14 @@ private:
     cl_base* head;
     vector<cl_base*> childs;
     int state;
+
+    struct o_sh {
+        cl_base* p_cl_base;
+        void (cl_base::* p_handler) (string);
+    };
+    multimap <string, o_sh*> connects;   //контейнер сигналов и обработчиков
+    multimap <string, o_sh*>::iterator it_connects;
+
 public:
     cl_base(cl_base* head = nullptr);
     cl_base(cl_base* head, string name);
