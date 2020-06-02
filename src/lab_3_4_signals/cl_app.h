@@ -12,9 +12,8 @@ class cl_app : public cl_base {
 public:
     using cl_base::cl_base;
     void printPath();
-    void start();
-    int exe_app();
-    void signalStart();
+    void start(s_signal, s_slot);
+    int exe_app(s_signal);
 };
 
 
