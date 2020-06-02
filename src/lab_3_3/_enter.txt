@@ -1,0 +1,25 @@
+3_3
+--------------------------------(правильный ввод)
+root
+/root obj_1 3 1
+/root obj_2 2 1
+/root/obj_2 obj_4 3 -1
+/root/obj_2 obj_5 4 1
+/root obj_3 3 1
+/root/obj_2 obj_3 6 1
+/root/obj_1 obj_7 5 1
+/root/obj_2/obj_4 obj_7 3 -1
+endtree
+/root/obj_2/obj_4/obj_7
+//
+-------------------------вывод:
+root
+    obj_1
+        obj_7
+    obj_2
+        obj_4
+            obj_7
+        obj_5
+        obj_3
+    obj_3
+--------------------------------
