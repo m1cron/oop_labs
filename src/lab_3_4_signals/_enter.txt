@@ -1,23 +1,4 @@
-root
-root obj_1 2 1
-obj_1 obj_2 2 -1
-obj_2 obj_3 2 -1
-obj_2 obj_4 2 1
-obj_1 obj_5 2 1
-root obj_6 2 -1
-root obj_7 2 1
-obj_6 obj_8 2 1
-endtree
-1 obj_1 obj_1
-2 obj_2 obj_3
-3 obj_3 obj_4
-4 obj_1 obj_5
-5 obj_2 obj_3
-0
-obj_1 hi
-obj_2 hello
-obj_3 bye
-endsignals
+
 
 out:
 

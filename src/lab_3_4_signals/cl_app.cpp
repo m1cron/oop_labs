@@ -8,7 +8,7 @@
 #include "cl_3.h"
 using namespace std;
 
-void cl_app::start(s_signal s_ignal, s_slot slot){
+void cl_app::start(){
     string obj0, obj1;
     int cls, state;
     cin >> obj0;
@@ -38,18 +38,18 @@ void cl_app::start(s_signal s_ignal, s_slot slot){
         cout << "\n" << number << " " << first << " " << second;
         from = get_root()->find(first);
         to = get_root()->find(second);
-        from->set_connect(SIGNAL(s_ignal), SLOT(slot), to);
+        from->set_connect(SIGNAL(cl_2::signal), SLOT(cl_3::slot), to);
     }
 }
 
-int cl_app::exe_app(s_signal s_ignal) {
+int cl_app::exe_app() {
     cout << "\nEmit signals";
     string sender, message;
     cl_base* from = nullptr;
     while ((cin >> sender) && (sender != "endsignals")) {
         cin >> message;
         from = get_root()->find(sender);
-        from->emit_signal(SIGNAL(s_ignal), message);
+        from->emit_signal(SIGNAL(cl_2::signal), message);
     }
     return 1;
 }

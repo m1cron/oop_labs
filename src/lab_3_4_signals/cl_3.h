@@ -13,8 +13,7 @@ using namespace std;
 class cl_3 : public cl_base {
 public:
     using cl_base::cl_base;
-    /*static void signal(string&);
-    static void slot(cl_base*, string&);*/
+    static void slot(cl_base*, string&);
 };
 
 
