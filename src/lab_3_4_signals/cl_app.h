@@ -1,20 +1,20 @@
 //
-// Created by micron on 5/21/2020.
+// Created by micron on 6/3/2020.
 //
 
-#ifndef INC_3_1_TRY_1_CL_APP_H
-#define INC_3_1_TRY_1_CL_APP_H
-
-
+#ifndef CL_APP
+#define CL_APP
+#include <string>
 #include "cl_base.h"
-
-class cl_app : public cl_base {
+using namespace std;
+class cl_app : public cl_base{
 public:
     using cl_base::cl_base;
-    void printPath();
+    void signal(string& a);
+    void handler(string a);
     void start();
-    int exe_app();
+    int exec_app();
+    TYPE_SIGNAL getSign(int);
+    TYPE_HANDLER getHand(int);
 };
-
-
-#endif //INC_3_1_TRY_1_CL_APP_H
+#endif

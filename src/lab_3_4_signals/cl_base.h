@@ -1,50 +1,54 @@
 //
-// Created by micron on 5/21/2020.
+// Created by micron on 6/3/2020.
 //
 
-#ifndef INC_3_1_TRY_1_CL_BASE_H
-#define INC_3_1_TRY_1_CL_BASE_H
-
-#include <vector>
+#ifndef CL_BASE_H
+#define CL_BASE_H
+#include <iostream>
 #include <string>
+#include <vector>
 using namespace std;
 
 class cl_base;
-typedef void (*s_signal)(string&);
-typedef void (*s_slot)(cl_base*, string& s);
-#define SIGNAL(ssignal) ((s_signal) (&ssignal)) // наш любимый тупедеф <3
-#define SLOT(slt) ((s_slot) (&slt))
+typedef void (cl_base::* TYPE_SIGNAL) (string&); // объявляю новые типы
+typedef void (cl_base::* TYPE_HANDLER) (string);
+
+#define SIGNAL_D(A, signal_f) (TYPE_SIGNAL) (&A::signal_f) // объявляю макросы для преобразования типов
+#define HENDLER_D(B, hendler_f) (TYPE_HANDLER) (&B::hendler_f)
 
 
-class cl_base {
-private:
+class cl_base{
+protected:
     string name;
-    cl_base* head;
-    vector<cl_base*> childs;
+    cl_base* p_parent;
     int state;
-
-    struct connect{
-        cl_base* base;
-        s_signal sig;
-        s_slot slt;
+    vector <cl_base*> children;
+    struct o_sh{
+        TYPE_SIGNAL p_signal;
+        cl_base* p_cl_base;
+        TYPE_HANDLER p_hendler;
     };
-    vector<connect> connects;
-
+    vector <o_sh*> connects;
+    vector <o_sh*>::iterator it;
+    int a = 1; // a - выбранный класс
 public:
-    cl_base(cl_base* head = nullptr);
-    cl_base(cl_base* head, string name);
-    cl_base* find(string);
-    void setName(string);
-    void print_tree(string);
-    void print_state(bool temp = 1);
-    void setState(int);
+    cl_base(cl_base* p_parent = nullptr);
+    cl_base(cl_base*, string);
     string getName();
-    string get_path(string, int);
+    cl_base* search(string);
+    void readiness_check();
+    void print_tree(string);
+    void setState(int);
+    int getNum();
+    void setNum(int);
+    void setName(string);
     cl_base* get_root();
-    cl_base* get_obj(string);
-    void set_connect(s_signal, s_slot, cl_base*);
-    void del_connect(s_signal, s_slot, cl_base*);
-    void emit_signal(s_signal, string&);
+    cl_base* search_coordinates(string);
+    /* lab4 */
+    void set_connect(TYPE_SIGNAL, cl_base*, TYPE_HANDLER);
+    void delete_connect(TYPE_SIGNAL, cl_base*, TYPE_HANDLER);
+    void emit_signal(TYPE_SIGNAL, string &);
+    virtual void signal(string&) = 0;       // говорю классу cl_base, что реализацией
+    virtual void handler(string) = 0;       // этих методов займутся наследники
 };
-
-#endif //INC_3_1_TRY_1_CL_BASE_H
+#endif

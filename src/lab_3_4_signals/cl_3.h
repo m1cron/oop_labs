@@ -1,20 +1,19 @@
 //
-// Created by micron on 5/21/2020.
+// Created by micron on 6/3/2020.
 //
 
-#ifndef INC_3_1_CL_3_H
-#define INC_3_1_CL_3_H
+#ifndef CL_3_H
+#define CL_3_H
 
-
-#include "cl_base.h"
+#include <iostream>
 #include <string>
+#include "cl_base.h"
 using namespace std;
-
-class cl_3 : public cl_base {
+class cl_3 : public cl_base{
 public:
     using cl_base::cl_base;
-    static void slot(cl_base*, string&);
+    void signal(string& a);
+    void handler(string a);
 };
 
-
-#endif //INC_3_1_CL_3_H
+#endif //CL_3_H

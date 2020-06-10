@@ -1,13 +1,11 @@
 //
-// Created by micron on 5/21/2020.
+// Created by micron on 6/3/2020.
 //
 
-
-#include "cl_3.h"
-#include <string>
 #include <iostream>
+#include <string>
+#include "cl_3.h"
 using namespace std;
 
-void cl_3::slot(cl_base* ptr, string& mes){
-    cout << "\nSignal to " << ptr->getName() << " Text: " << mes;
-}
+void cl_3::signal(string& mes){ mes = " Text: " + this->getName()+ " -> " + mes; }
+void cl_3::handler(string mes){ cout << "\nSignal to " << getName() << mes; }

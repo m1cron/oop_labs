@@ -4,5 +4,5 @@
 int main() {
     cl_app app;
     app.start();
-    return app.exe_app();
+    return app.exec_app();
 }

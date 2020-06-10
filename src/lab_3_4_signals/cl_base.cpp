@@ -1,110 +1,123 @@
+//
+// Created by micron on 6/3/2020.
+//
+
 #include <iostream>
 #include <string>
 #include "cl_base.h"
 using namespace std;
 
-cl_base::cl_base(cl_base* head) { this->head = head; }
-
-cl_base::cl_base(cl_base* head, string name) {
-    setName(name);
-    if(head != nullptr){
-        this->head = head;
-        head->childs.push_back(this);
-    }
+cl_base::cl_base(cl_base* p_parent){
+    this->p_parent = p_parent;
+    if (p_parent != 0)
+        this->p_parent->children.push_back(this);
 }
 
-cl_base* cl_base::find(string name){
-    if(this->name == name) return this;
-    for(int i = 0; i < childs.size(); i++){
-        if(childs[i]->find(name) != nullptr) return childs[i]->find(name);
+cl_base::cl_base(cl_base* p_parent, string name){
+    this->name = name;
+    this->p_parent = p_parent;
+    if (p_parent != 0)
+        this->p_parent->children.push_back(this);
+}
+
+void cl_base::setName(string name) { this->name = name; }
+string cl_base::getName(){ return this->name; }
+void cl_base::setState(int state) { this->state = state; }
+int cl_base::getNum() { return a; }
+void cl_base::setNum(int a) { this->a = a; }
+
+cl_base* cl_base::get_root() {
+    if(this->p_parent == nullptr) return this;
+    cl_base* base_prev;
+    while(base_prev->p_parent)
+        base_prev = base_prev->p_parent;
+    return base_prev;
+}
+
+cl_base* cl_base::search(string name){
+    if (this->name == name) return this;
+    for (int i = 0; i < this->children.size(); i++)
+        if (this->children[i]->name == name)
+            return this->children[i];
+    for (int i = 0; i < this->children.size(); i++){
+        if (this->children[i]->children.size() != 0){
+            cl_base* pointer = children[i]->search(name);
+            if (pointer != nullptr)
+                return pointer;
+        }
     }
     return nullptr;
 }
 
-void cl_base::setName(string name) { this->name = name; }
-void cl_base::setState(int state) {this->state = state; }
-string cl_base::getName() { return this->name; }
+void cl_base::readiness_check(){
+    if ((this->search(this->name) != nullptr) && (this->state > 0))
+        cout << endl << "The object " << this->name << " is ready";
+    else
+        cout << endl << "The object " << this->name << " is not ready";
+    for (int i = 0; i < this->children.size(); i++)
+        children[i]->readiness_check();
+}
 
 void cl_base::print_tree(string space) {
     cout << space << name;
-    space += "    ";
-    for(int i = 0; i < childs.size(); i++){
+    space += " ";
+    for(int i = 0; i < children.size(); i++){
         cout << endl;
-        childs[i]->print_tree(space);
+        children[i]->print_tree(space);
     }
 }
 
-void cl_base::print_state(bool temp) {
-    if(temp) cout << "\nTest result\n";
-    cout << "The object " << this->name;
-    if(state > 0) cout << " is ready";
-    else cout << " is not ready";
-
-    for(int i = 0; i < childs.size(); i++){
-        cout << endl;
-        childs[i]->print_state(0);
+cl_base* cl_base::search_coordinates(string coordinates){
+    string m_coordinates;
+    coordinates.erase(0, 1);
+    int number = coordinates.find('/');
+    if (number == -1){
+        m_coordinates = coordinates;
+        coordinates.erase(0, coordinates.size());
+    } else {
+        for (int i = 0; i < number; i++)
+            m_coordinates.push_back(coordinates[i]);
+        coordinates.erase(0, number);
     }
-}
-
-string cl_base::get_path(string path, int i_lvl){
-    int i_item_start = 1, i_item_end, i_lc = 1;
-    while(i_item_start){
-        i_item_end = path.find('/', i_item_start);
-        if(i_lc == i_lvl) return path.substr(i_item_start, i_item_end - i_item_start);
-        i_lc++;
-        i_item_start = i_item_end + 1;
+    if (this->name == m_coordinates){
+        if (coordinates.size() == 0) return this;
+        for (int i = 0; i < this->children.size(); i++){
+            cl_base* pointer = this->children[i]->search_coordinates(coordinates);
+            if (pointer != nullptr)
+                return pointer;
+        }
     }
-    return "";
+    return nullptr;
 }
 
-cl_base* cl_base::get_root() {
-    if(this->head == nullptr) return this;
-    cl_base* base_prev;
-    while(base_prev->head)
-        base_prev = base_prev->head;
-    return base_prev;
-}
-
-cl_base* cl_base::get_obj(string path){
-    int i_lvl_next = 2; // уровень в программе
-    cl_base *base_next = get_root(); // получил указатель на рут
-    string temp = get_path(path , 1);
-    if(temp != get_root()->getName()) return NULL; // проверка на ошибки
-    temp = get_path(path, i_lvl_next);
-    while(!temp.empty()){
-        cl_base *base_prev = base_next->find(temp);
-        if(base_prev){
-            base_next = base_prev;
-            i_lvl_next++;
-            temp = get_path(path, i_lvl_next);
-        } else { return NULL; }
-    }
-    return base_next;
-}
-
-void cl_base::set_connect(s_signal sig, s_slot slt, cl_base* ptr){
-    for(connect c : connects){
-        if(c.sig == sig && c.slt == slt && c.base == ptr) return;
-    }
-    connect c = {ptr, sig, slt};
-    connects.push_back(c);
-}
-
-void cl_base::del_connect(s_signal sig, s_slot slt, cl_base* ptr){
-    for(auto it = connects.begin(); it != connects.end(); it++){
-        if(it->sig == sig && it->slt == slt && it->base == ptr) {
-            connects.erase(it);
+void cl_base::set_connect(TYPE_SIGNAL p_signal, cl_base* p_object,
+                          TYPE_HANDLER p_ob_hendler){                       // установить соединение
+    for (unsigned int i = 0; i < connects.size(); i++)
+        if (connects[i]->p_signal == p_signal &&
+            connects[i]->p_cl_base == p_object &&
+            connects[i]->p_hendler == p_ob_hendler)
             return;
-        }
-    }
+    o_sh* p_value = new o_sh();
+    *p_value = {p_signal, p_object, p_ob_hendler};
+    connects.push_back(p_value);                                            // поместить установленную связь ввектор
 }
 
-void cl_base::emit_signal(s_signal sig, string& mes){
-    for(connect c : connects){
-        if(connects.empty()) return;
-        if(c.sig == sig){
-            c.slt(c.base, this->name);
-            sig(mes);
-        }
-    }
+void cl_base::delete_connect(TYPE_SIGNAL p_signal, cl_base* p_object,
+                             TYPE_HANDLER p_ob_hendler){                    // удалить соединение
+    if (connects.empty()) return;
+    for (unsigned int i = 0; i < connects.size(); i++)
+        if (connects[i]->p_signal == p_signal &&
+            connects[i]->p_cl_base == p_object &&
+            connects[i]->p_hendler == p_ob_hendler)
+            connects.erase(connects.begin() + i);
+}
+
+void cl_base::emit_signal(TYPE_SIGNAL p_signal, string& s_command){         // излучить сигнал
+    if (connects.empty()) return;
+    it = connects.begin();
+    (this->*((*(it))->p_signal))(s_command);
+    for (it; it != connects.end(); it++)
+        if ((*(it))->p_signal == p_signal)
+            (((*(it))->p_cl_base)->*((*(it))->p_hendler))
+                    (s_command);
 }
